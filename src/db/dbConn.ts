@@ -7,7 +7,7 @@ interface Connection {
 
 const connection: Connection = {}
 
-export async function ConnectToDatabase(): Promise<void> {
+export async function connectToDatabase(): Promise<void> {
     if (connection.isConnected) {
         console.log("Database connection already exsists!")
         return

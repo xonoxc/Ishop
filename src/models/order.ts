@@ -1,12 +1,29 @@
 import mongoose, { Schema, model, models } from "mongoose"
-import { ImageVariant, License } from "@/models/product"
+import { ImageVariant, ImageVriantType } from "@/models/product"
+
+export type PaymentStatus = "completed" | "failed" | "pending"
+
+interface PopulatedUser {
+    _id: mongoose.Types.ObjectId
+    email: string
+}
+
+interface PopulatedProduct {
+    _id: mongoose.Types.ObjectId
+    name: string
+    imageUrl: string
+}
 
 export interface IOrder {
-    userId: mongoose.Types.ObjectId
-    productId: mongoose.Types.ObjectId
+    userId: mongoose.Types.ObjectId | PopulatedUser
+    productId: mongoose.Types.ObjectId | PopulatedProduct
     variant: ImageVariant
-    price: number
-    license: License
+    razorpayOrderId: string
+    razorpayPaymentId?: string
+    amount: number
+    status: PaymentStatus
+    downloadUrl: string
+    previewUrl: string
     _id?: mongoose.Types.ObjectId
     createdAt?: Date
     updatedAt?: Date
@@ -28,6 +45,8 @@ const orderSchema = new Schema<IOrder>(
             type: {
                 type: String,
                 required: true,
+                enum: ["SQUARE", "WIDE", "PORTRAIT"] as ImageVriantType[],
+                set: (v: string) => v.toUpperCase(),
             },
             price: {
                 type: Number,
@@ -39,6 +58,30 @@ const orderSchema = new Schema<IOrder>(
                 required: true,
                 enum: ["personal", "commercial"],
             },
+        },
+        razorpayOrderId: {
+            type: String,
+            required: true,
+        },
+        razorpayPaymentId: {
+            type: String,
+            required: true,
+        },
+        amount: {
+            type: Number,
+            required: true,
+        },
+        status: {
+            type: String,
+            required: true,
+            enum: ["failed", "completed", "pending"],
+            default: "pending",
+        },
+        downloadUrl: {
+            type: String,
+        },
+        previewUrl: {
+            type: String,
         },
     },
     { timestamps: true }
