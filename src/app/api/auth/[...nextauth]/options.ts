@@ -2,7 +2,7 @@ import { connectToDatabase } from "@/db/dbConn"
 import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
-import User from "@/models/user"
+import User, { Role } from "@/models/user"
 import { envVariables } from "@/lib/validation/env"
 
 export const authOptions: NextAuthOptions = {
@@ -62,7 +62,7 @@ export const authOptions: NextAuthOptions = {
         },
         async session({ session, token }) {
             if (session.user) {
-                session.user.role = token.role as string
+                session.user.role = token.role as Role
                 session.user.id = token.id as string
             }
             return session
