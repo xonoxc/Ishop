@@ -6,6 +6,8 @@ export const envSchema = z.object({
     IMAGEKIT_PRIVATE_KEY: z.string(),
     NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT: z.string(),
     NEXTAUTH_SECRET: z.string(),
+    RAZORPAY_KEY_ID: z.string(),
+    RAZORPAY_KEY_SECRET: z.string(),
 })
 
 const env = envSchema.safeParse(process.env)

@@ -1,4 +1,4 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/options"
+import { authOptions } from "@/lib/auth/auth"
 import { connectToDatabase } from "@/db/dbConn"
 import Product, { IProduct } from "@/models/product"
 import { getServerSession } from "next-auth"

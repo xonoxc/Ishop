@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server"
 import Product from "@/models/product"
 
 export async function Get(
-    request: NextRequest,
+    _: NextRequest,
     props: {
         params: Promise<{ id: string }>
     }
