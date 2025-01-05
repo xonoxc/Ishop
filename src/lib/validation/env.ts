@@ -2,6 +2,9 @@ import { z } from "zod"
 
 export const envSchema = z.object({
     MONGODB_URI: z.string(),
+    NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY: z.string(),
+    IMAGEKIT_PRIVATE_KEY: z.string(),
+    NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT: z.string(),
     NEXTAUTH_SECRET: z.string(),
 })
 
