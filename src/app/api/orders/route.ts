@@ -1,5 +1,4 @@
 import Razorpay from "razorpay"
-import { envVariables } from "@/lib/validation/env"
 import { NextRequest, NextResponse } from "next/server"
 import { authOptions } from "@/lib/auth/auth"
 import { getServerSession } from "next-auth"
@@ -7,8 +6,8 @@ import { connectToDatabase } from "@/db/dbConn"
 import Order from "@/models/order"
 
 const razorPay = new Razorpay({
-    key_id: envVariables.RAZORPAY_KEY_ID,
-    key_secret: envVariables.RAZORPAY_KEY_SECRET,
+    key_id: process.env.RAZORPAY_KEY_ID!,
+    key_secret: process.env.RAZORPAY_KEY_SECRET!,
 })
 
 export async function POST(request: NextRequest) {

@@ -1,5 +1,4 @@
 import mongoose from "mongoose"
-import { envVariables } from "@/lib/validation/env"
 
 interface Connection {
     isConnected?: number
@@ -13,9 +12,11 @@ export async function connectToDatabase(): Promise<void> {
         return
     }
 
+    console.log(process.env.MONGODB_URI)
+
     try {
         const db = await mongoose.connect(
-            `${envVariables.MONGODB_URI}/estore`,
+            `${process.env.MONGODB_URI!}/estore`,
             {
                 bufferCommands: true,
                 maxPoolSize: 10,

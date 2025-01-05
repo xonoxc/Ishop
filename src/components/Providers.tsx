@@ -3,10 +3,9 @@
 import React, { ReactNode } from "react"
 import { ImageKitProvider } from "imagekitio-next"
 import { SessionProvider } from "next-auth/react"
-import { envVariables } from "@/lib/validation/env"
 
-const urlEndpoint = envVariables.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT
-const publicKey = envVariables.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY
+const urlEndpoint = process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT!
+const publicKey = process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY!
 
 export default function Providers({ children }: { children: ReactNode }) {
     const authenticator = async () => {

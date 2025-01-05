@@ -23,10 +23,10 @@ export const IMAGE_VARIANTS = {
     },
 } as const
 
-export type ImageVriantType = keyof typeof IMAGE_VARIANTS
+export type ImageVariantType = keyof typeof IMAGE_VARIANTS
 
 export interface ImageVariant {
-    type: ImageVriantType
+    type: ImageVariantType
     price: number
     license: "personal" | "commercial"
 }

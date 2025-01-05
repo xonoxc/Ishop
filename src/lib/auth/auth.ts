@@ -3,7 +3,6 @@ import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import User, { Role } from "@/models/user"
-import { envVariables } from "@/lib/validation/env"
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -76,5 +75,5 @@ export const authOptions: NextAuthOptions = {
         strategy: "jwt",
         maxAge: 30 * 24 * 60 * 60,
     },
-    secret: envVariables.NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET!,
 }
