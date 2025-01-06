@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useNotification } from "@/components/Notification"
 import Link from "next/link"
+import { ArrowLeft } from "lucide-react"
 
 export default function Register() {
     const [email, setEmail] = useState<string>("")
@@ -15,7 +16,7 @@ export default function Register() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
-        if (password === confirmPassword) {
+        if (password !== confirmPassword) {
             showNotification("Passwords do not match", "error")
             return
         }
@@ -47,64 +48,58 @@ export default function Register() {
     }
 
     return (
-        <div className="max-w-md mx-auto">
-            <h1 className="text-2xl font-bold mb-4">Register</h1>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label htmlFor="email" className="block mb-1">
-                        Email
-                    </label>
+        <div className="min-h-screen bg-gradient-to-b from-[#161617] to-black text-white p-6">
+            <button
+                onClick={() => router.back()}
+                className="flex items-center text-sm text-gray-400 hover:text-white"
+            >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+            </button>
+            <div className="max-w-sm mx-auto mt-12 space-y-8">
+                <div className="flex flex-col items-center">
+                    <div className="w-12 h-12 bg-white/10 rounded-full mb-6" />
+                    <h1 className="text-2xl font-semibold">
+                        Create your account
+                    </h1>
+                    <p className="text-sm text-gray-400">
+                        Already have an account?{" "}
+                        <Link href="/login">Sign in</Link>
+                    </p>
+                </div>
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <input
                         type="email"
-                        id="email"
                         value={email}
                         onChange={e => setEmail(e.target.value)}
+                        placeholder="Your email"
                         required
-                        className="w-full px-3 py-2 border rounded"
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-white/20"
                     />
-                </div>
-                <div>
-                    <label htmlFor="password" className="block mb-1">
-                        Password
-                    </label>
                     <input
                         type="password"
-                        id="password"
                         value={password}
                         onChange={e => setPassword(e.target.value)}
+                        placeholder="Password"
                         required
-                        className="w-full px-3 py-2 border rounded"
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-white/20"
                     />
-                </div>
-                <div>
-                    <label htmlFor="confirmPassword" className="block mb-1">
-                        Confirm Password
-                    </label>
                     <input
                         type="password"
-                        id="confirmPassword"
                         value={confirmPassword}
                         onChange={e => setConfirmPassword(e.target.value)}
+                        placeholder="Confirm password"
                         required
-                        className="w-full px-3 py-2 border rounded"
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-white/20"
                     />
-                </div>
-                <button
-                    type="submit"
-                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-                >
-                    Register
-                </button>
-                <p className="text-center mt-4">
-                    Already have an account?{" "}
-                    <Link
-                        href="/login"
-                        className="text-blue-500 hover:text-blue-600"
+                    <button
+                        type="submit"
+                        className="w-full bg-white text-black py-3 rounded-lg font-medium hover:bg-white/90"
                     >
-                        Login
-                    </Link>
-                </p>
-            </form>
+                        Create account
+                    </button>
+                </form>
+            </div>
         </div>
     )
 }

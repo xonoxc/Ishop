@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import Script from "next/script"
 import Providers from "@/components/Providers"
+import Header from "@/components/Header"
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default function RootLayout({
                     strategy="lazyOnload"
                 />
                 <Providers>
+                    <Header />
                     <main>{children}</main>
                 </Providers>
             </body>

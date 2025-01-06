@@ -1,9 +1,11 @@
 "use client"
-import { useNotification } from "@/components/Notification"
+
 import { signIn } from "next-auth/react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { ArrowLeft } from "lucide-react"
+import { useNotification } from "@/components/Notification"
+import Link from "next/link"
 
 export default function Login() {
     const [email, setEmail] = useState<string>("")
@@ -28,51 +30,50 @@ export default function Login() {
     }
 
     return (
-        <div className="max-w-md mx-auto">
-            <h1 className="text-2xl font-bold mb-4">Login</h1>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label htmlFor="email" className="block mb-1">
-                        Email
-                    </label>
+        <div className="min-h-screen bg-gradient-to-b from-[#161617] to-black text-white p-6">
+            <button
+                onClick={() => router.back()}
+                className="flex items-center text-sm text-gray-400 hover:text-white"
+            >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+            </button>
+            <div className="max-w-sm mx-auto mt-12 space-y-8">
+                <div className="flex flex-col items-center">
+                    <div className="w-12 h-12 bg-white/10 rounded-full mb-6" />
+                    <h1 className="text-2xl font-semibold">
+                        Yooo, welcome back!
+                    </h1>
+                    <p className="text-sm text-gray-400">
+                        First time here?{" "}
+                        <Link href={"/register"}>Sign up </Link>
+                    </p>
+                </div>
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <input
                         type="email"
-                        id="email"
                         value={email}
                         onChange={e => setEmail(e.target.value)}
+                        placeholder="Your email"
                         required
-                        className="w-full px-3 py-2 border rounded"
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-white/20"
                     />
-                </div>
-                <div>
-                    <label htmlFor="password" className="block mb-1">
-                        Password
-                    </label>
                     <input
                         type="password"
-                        id="password"
                         value={password}
                         onChange={e => setPassword(e.target.value)}
+                        placeholder="••••••••"
                         required
-                        className="w-full px-3 py-2 border rounded"
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-white/20"
                     />
-                </div>
-                <button
-                    type="submit"
-                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-                >
-                    Login
-                </button>
-                <p className="text-center mt-4">
-                    Don&apos;t have an account?{" "}
-                    <Link
-                        href="/register"
-                        className="text-blue-500 hover:text-blue-600"
+                    <button
+                        type="submit"
+                        className="w-full bg-white text-black py-3 rounded-lg font-medium hover:bg-white/90"
                     >
-                        Register
-                    </Link>
-                </p>
-            </form>
+                        Sign in
+                    </button>
+                </form>
+            </div>
         </div>
     )
 }
