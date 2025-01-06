@@ -29,11 +29,11 @@ class ApiClient {
 
         const response = await fetch(endpoint, {
             method,
-            body: JSON.stringify(body),
+            body: body ? JSON.stringify(body) : undefined,
             headers: defaultHeaders,
         })
         if (!response.ok) {
-            throw new Error(response.statusText)
+            throw new Error(await response.text())
         }
 
         return response.json()
