@@ -5,13 +5,22 @@ import {
     ImageVariantType,
     IProduct,
 } from "@/models/product"
-import { Loader2, AlertCircle, Check, Image as ImageIcon } from "lucide-react"
+import {
+    Loader2,
+    AlertCircle,
+    Check,
+    ImageIcon,
+    ShoppingCart,
+} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useParams, useRouter } from "next/navigation"
-import { useNotification } from "@/components/Notification"
 import { useEffect, useState } from "react"
 import { apiClient } from "@/lib/client/apiclient"
 import { useSession } from "next-auth/react"
 import { IKImage } from "imagekitio-next"
+import { useToast } from "@/hooks/use-toast"
 
 export default function ProductPage() {
     const params: { id?: string } = useParams()
@@ -22,7 +31,7 @@ export default function ProductPage() {
         null
     )
 
-    const { showNotification } = useNotification()
+    const { toast } = useToast()
     const router = useRouter()
     const { data: session } = useSession()
 
@@ -34,17 +43,19 @@ export default function ProductPage() {
                 setLoading(false)
                 return
             }
-
             try {
-                const data = await apiClient.getProduct(id.toString())
-                setProduct(data)
-            } catch (error) {
-                console.error("Error fetching product:", error)
-                setError(
-                    error instanceof Error
-                        ? error.message
-                        : "Failed to load product"
+                setLoading(true)
+                const { data, error } = await apiClient.getProduct(
+                    id.toString()
                 )
+                if (error) {
+                    throw new Error(error)
+                }
+                if (data) {
+                    setProduct(data.product)
+                }
+            } catch (error) {
+                console.error("Error fetching product", error)
             } finally {
                 setLoading(false)
             }
@@ -54,13 +65,16 @@ export default function ProductPage() {
 
     const handlePurchase = async (variant: ImageVariant) => {
         if (!session) {
-            showNotification("Please sign in to purchase", "error")
+            toast({
+                title: "Please sign in to purchase",
+                variant: "destructive",
+            })
             router.push("/login")
             return
         }
 
         if (!product?._id) {
-            showNotification("Invalid product", "error")
+            toast({ title: "Invalid product", variant: "destructive" })
             return
         }
 
@@ -78,7 +92,7 @@ export default function ProductPage() {
                 description: `${product.name} - ${variant.type} Version`,
                 order_id: orderId,
                 handler: function () {
-                    showNotification("Payment successful", "success")
+                    toast({ title: "Payment successful" })
                     router.push("/orders")
                 },
                 prefil: {
@@ -90,10 +104,11 @@ export default function ProductPage() {
             rzp.open()
         } catch (error) {
             console.error(error)
-            showNotification(
-                error instanceof Error ? error.message : "Payment failed",
-                "error"
-            )
+            toast({
+                title:
+                    error instanceof Error ? error.message : "Payment failed",
+                variant: "destructive",
+            })
         }
     }
 
@@ -130,47 +145,54 @@ export default function ProductPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Image Section */}
                 <div className="space-y-4">
-                    <div
-                        className="relative rounded-lg overflow-hidden"
-                        style={{
-                            aspectRatio: selectedVariant
-                                ? `${IMAGE_VARIANTS[selectedVariant.type].dimensions.width} / ${
-                                      IMAGE_VARIANTS[selectedVariant.type]
-                                          .dimensions.height
-                                  }`
-                                : "1 / 1",
-                        }}
-                    >
-                        <IKImage
-                            urlEndpoint={process.env.NEXT_PUBLIC_URL_ENDPOINT}
-                            path={product.imageUrl}
-                            alt={product.name}
-                            transformation={
-                                selectedVariant
-                                    ? getTransformation(selectedVariant.type)
-                                    : getTransformation("SQUARE")
-                            }
-                            className="w-full h-full object-cover"
-                            loading="eager"
-                        />
-                    </div>
-
-                    {/* Image Dimensions Info */}
-                    {selectedVariant && (
-                        <div className="text-sm text-center text-base-content/70">
-                            Preview:{" "}
-                            {
-                                IMAGE_VARIANTS[selectedVariant.type].dimensions
-                                    .width
-                            }{" "}
-                            x{" "}
-                            {
-                                IMAGE_VARIANTS[selectedVariant.type].dimensions
-                                    .height
-                            }
-                            px
-                        </div>
-                    )}
+                    <Card>
+                        <CardContent className="p-4">
+                            <div
+                                className="relative rounded-lg overflow-hidden"
+                                style={{
+                                    aspectRatio: selectedVariant
+                                        ? `${IMAGE_VARIANTS[selectedVariant.type].dimensions.width} / ${
+                                              IMAGE_VARIANTS[
+                                                  selectedVariant.type
+                                              ].dimensions.height
+                                          }`
+                                        : "1 / 1",
+                                }}
+                            >
+                                <IKImage
+                                    urlEndpoint={
+                                        process.env.NEXT_PUBLIC_URL_ENDPOINT
+                                    }
+                                    path={product.imageUrl}
+                                    alt={product.name}
+                                    transformation={
+                                        selectedVariant
+                                            ? getTransformation(
+                                                  selectedVariant.type
+                                              )
+                                            : getTransformation("SQUARE")
+                                    }
+                                    className="w-full h-full object-cover"
+                                    loading="eager"
+                                />
+                            </div>
+                            {selectedVariant && (
+                                <div className="text-sm text-center text-muted-foreground mt-2">
+                                    Preview:{" "}
+                                    {
+                                        IMAGE_VARIANTS[selectedVariant.type]
+                                            .dimensions.width
+                                    }{" "}
+                                    x{" "}
+                                    {
+                                        IMAGE_VARIANTS[selectedVariant.type]
+                                            .dimensions.height
+                                    }
+                                    px
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
                 </div>
 
                 {/* Product Details Section */}
@@ -179,97 +201,124 @@ export default function ProductPage() {
                         <h1 className="text-4xl font-bold mb-2">
                             {product.name}
                         </h1>
-                        <p className="text-base-content/80 text-lg">
+                        <p className="text-muted-foreground text-lg">
                             {product.description}
                         </p>
                     </div>
 
                     {/* Variants Selection */}
-                    <div className="space-y-4">
-                        <h2 className="text-xl font-semibold">
-                            Available Versions
-                        </h2>
-                        {product.variants.map(variant => (
-                            <div
-                                key={variant.type}
-                                className={`card bg-base-200 cursor-pointer hover:bg-base-300 transition-colors ${
-                                    selectedVariant?.type === variant.type
-                                        ? "ring-2 ring-primary"
-                                        : ""
-                                }`}
-                                onClick={() => setSelectedVariant(variant)}
+                    <Tabs defaultValue="versions" className="w-full">
+                        <TabsList className="rounded-2xl mb-4">
+                            <TabsTrigger
+                                value="versions"
+                                className="rounded-xl"
                             >
-                                <div className="card-body p-4">
-                                    <div className="flex justify-between items-center">
-                                        <div className="flex items-center gap-3">
-                                            <ImageIcon className="w-5 h-5" />
-                                            <div>
-                                                <h3 className="font-semibold">
-                                                    {
-                                                        IMAGE_VARIANTS[
-                                                            variant.type.toUpperCase() as keyof typeof IMAGE_VARIANTS
-                                                        ].label
-                                                    }
-                                                </h3>
-                                                <p className="text-sm text-base-content/70">
-                                                    {
-                                                        IMAGE_VARIANTS[
-                                                            variant.type.toUpperCase() as keyof typeof IMAGE_VARIANTS
-                                                        ].dimensions.width
-                                                    }{" "}
-                                                    x{" "}
-                                                    {
-                                                        IMAGE_VARIANTS[
-                                                            variant.type.toUpperCase() as keyof typeof IMAGE_VARIANTS
-                                                        ].dimensions.height
-                                                    }
-                                                    px • {variant.license}{" "}
-                                                    license
-                                                </p>
+                                Versions
+                            </TabsTrigger>
+                            <TabsTrigger value="license" className="rounded-xl">
+                                License Info
+                            </TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="versions">
+                            <div className="space-y-4">
+                                {product.variants.map(variant => (
+                                    <Card
+                                        key={variant.type}
+                                        className={`cursor-pointer transition-colors ${
+                                            selectedVariant?.type ===
+                                            variant.type
+                                                ? "ring-2 ring-primary"
+                                                : ""
+                                        } rounded-2xl`}
+                                        onClick={() =>
+                                            setSelectedVariant(variant)
+                                        }
+                                    >
+                                        <CardContent className="p-4">
+                                            <div className="flex justify-between items-center">
+                                                <div className="flex items-center gap-3">
+                                                    <ImageIcon className="w-5 h-5" />
+                                                    <div>
+                                                        <h3 className="font-semibold">
+                                                            {
+                                                                IMAGE_VARIANTS[
+                                                                    variant.type.toUpperCase() as keyof typeof IMAGE_VARIANTS
+                                                                ].label
+                                                            }
+                                                        </h3>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {
+                                                                IMAGE_VARIANTS[
+                                                                    variant.type.toUpperCase() as keyof typeof IMAGE_VARIANTS
+                                                                ].dimensions
+                                                                    .width
+                                                            }{" "}
+                                                            x{" "}
+                                                            {
+                                                                IMAGE_VARIANTS[
+                                                                    variant.type.toUpperCase() as keyof typeof IMAGE_VARIANTS
+                                                                ].dimensions
+                                                                    .height
+                                                            }
+                                                            px •{" "}
+                                                            {variant.license}{" "}
+                                                            license
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-4">
+                                                    <span className="text-xl font-bold">
+                                                        $
+                                                        {variant.price.toFixed(
+                                                            2
+                                                        )}
+                                                    </span>
+                                                    <Button
+                                                        size="sm"
+                                                        className="rounded-lg"
+                                                        onClick={e => {
+                                                            e.stopPropagation()
+                                                            handlePurchase(
+                                                                variant
+                                                            )
+                                                        }}
+                                                    >
+                                                        <ShoppingCart className="w-4 h-4 mr-2" />
+                                                        Buy Now
+                                                    </Button>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <span className="text-xl font-bold">
-                                                ${variant.price.toFixed(2)}
-                                            </span>
-                                            <button
-                                                className="btn btn-primary btn-sm"
-                                                onClick={e => {
-                                                    e.stopPropagation()
-                                                    handlePurchase(variant)
-                                                }}
-                                            >
-                                                Buy Now
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-
-                    {/* License Information */}
-                    <div className="card bg-base-200">
-                        <div className="card-body p-4">
-                            <h3 className="font-semibold mb-2">
-                                License Information
-                            </h3>
-                            <ul className="space-y-2">
-                                <li className="flex items-center gap-2">
-                                    <Check className="w-4 h-4 text-success" />
-                                    <span>
-                                        Personal: Use in personal projects
-                                    </span>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <Check className="w-4 h-4 text-success" />
-                                    <span>
-                                        Commercial: Use in commercial projects
-                                    </span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                        </TabsContent>
+                        <TabsContent value="license">
+                            <Card>
+                                <CardContent className="p-4">
+                                    <h3 className="font-semibold mb-2">
+                                        License Information
+                                    </h3>
+                                    <ul className="space-y-2">
+                                        <li className="flex items-center gap-2">
+                                            <Check className="w-4 h-4 text-green-500" />
+                                            <span>
+                                                Personal: Use in personal
+                                                projects
+                                            </span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <Check className="w-4 h-4 text-green-500" />
+                                            <span>
+                                                Commercial: Use in commercial
+                                                projects
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+                    </Tabs>
                 </div>
             </div>
         </div>

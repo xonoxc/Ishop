@@ -1,5 +1,5 @@
 import mongoose, { Schema, model, models } from "mongoose"
-import { ImageVariant, ImageVriantType } from "@/models/product"
+import { ImageVariant, ImageVariantType } from "@/models/product"
 
 export type PaymentStatus = "completed" | "failed" | "pending"
 
@@ -45,7 +45,7 @@ const orderSchema = new Schema<IOrder>(
             type: {
                 type: String,
                 required: true,
-                enum: ["SQUARE", "WIDE", "PORTRAIT"] as ImageVriantType[],
+                enum: ["SQUARE", "WIDE", "PORTRAIT"] as ImageVariantType[],
                 set: (v: string) => v.toUpperCase(),
             },
             price: {

@@ -1,4 +1,5 @@
 "use client"
+import { useToast } from "@/hooks/use-toast"
 import { apiClient } from "@/lib/client/apiclient"
 import { IOrder } from "@/models/order"
 import { IMAGE_VARIANTS } from "@/models/product"
@@ -12,14 +13,21 @@ export default function Order() {
     const [loading, setLoading] = useState<boolean>(true)
 
     const { data: session } = useSession()
+    const { toast } = useToast()
 
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const data = await apiClient.getUserOrders()
-                setOrders(data)
+                const { data, error } = await apiClient.getUserOrders()
+                if (error) {
+                    toast({
+                        title: "Something went wrong",
+                        variant: "destructive",
+                    })
+                }
+                setOrders(data?.validOrders as IOrder[])
             } catch (error) {
-                console.error("Error fetching orders:", error)
+                console.error("Error while fetching orders", error)
             } finally {
                 setLoading(false)
             }
@@ -38,17 +46,17 @@ export default function Order() {
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-3xl font-bold mb-8">My Orders</h1>
             <div className="space-y-6">
-                {orders.map(order => {
+                {orders?.map(order => {
                     const variantDimensions =
                         IMAGE_VARIANTS[
-                            order.variant.type.toUpperCase() as keyof typeof IMAGE_VARIANTS
+                            order?.variant.type.toUpperCase() as keyof typeof IMAGE_VARIANTS
                         ].dimensions
 
-                    const product = order.productId as any
+                    const product = order?.productId as any
 
                     return (
                         <div
-                            key={order._id?.toString()}
+                            key={order?._id?.toString()}
                             className="card bg-base-100 shadow-xl"
                         >
                             <div className="card-body">
@@ -160,7 +168,7 @@ export default function Order() {
                     )
                 })}
 
-                {orders.length === 0 && (
+                {orders?.length === 0 && (
                     <div className="text-center py-12">
                         <div className="text-base-content/70 text-lg">
                             No orders found

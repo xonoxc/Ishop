@@ -4,14 +4,14 @@ import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { ArrowLeft } from "lucide-react"
-import { useNotification } from "@/components/Notification"
+import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 
 export default function Login() {
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
     const router = useRouter()
-    const { showNotification } = useNotification()
+    const { toast } = useToast()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -22,9 +22,14 @@ export default function Login() {
         })
 
         if (result?.error) {
-            showNotification(result.error, "error")
+            toast({
+                title: result.error,
+                variant: "destructive",
+            })
         } else {
-            showNotification("Login Successful!", "error")
+            toast({
+                title: "Login successful",
+            })
             router.push("/")
         }
     }
@@ -38,7 +43,7 @@ export default function Login() {
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
             </button>
-            <div className="max-w-sm mx-auto mt-12 space-y-8">
+            <div className="max-w-sm mx-auto mt-16 space-y-16">
                 <div className="flex flex-col items-center">
                     <div className="w-12 h-12 bg-white/10 rounded-full mb-6" />
                     <h1 className="text-2xl font-semibold">

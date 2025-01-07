@@ -2,7 +2,7 @@ import { connectToDatabase } from "@/db/dbConn"
 import { NextRequest, NextResponse } from "next/server"
 import Product from "@/models/product"
 
-export async function Get(
+export async function GET(
     _: NextRequest,
     props: {
         params: Promise<{ id: string }>

@@ -5,19 +5,27 @@ import { useEffect, useState } from "react"
 import { apiClient } from "@/lib/client/apiclient"
 import { RequestStatus } from "@/types/requestStatus"
 import ImageGallery from "@/components/ImageGallery"
+import { useToast } from "@/hooks/use-toast"
 
 export default function Home() {
     const [products, setProducts] = useState<IProduct[]>([])
     const [status, setStatus] = useState<RequestStatus>("pending")
+    const { toast } = useToast()
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const data = await apiClient.getProducts()
-                setProducts(data)
+                setStatus("pending")
+                const { data, error } = await apiClient.getProducts()
+                console.log("data", data)
+                if (error) {
+                    toast({
+                        title: JSON.parse(error).error,
+                    })
+                }
+                setProducts(data?.products as IProduct[])
             } catch (error) {
-                setStatus("error")
-                console.error(error)
+                console.error("error fetching products", error)
             } finally {
                 setStatus("idle")
             }
@@ -30,7 +38,6 @@ export default function Home() {
         <main className="container mx-auto px-4 py-8">
             <h1 className="text-3xl font-bold mb-8">ImageKit Shop</h1>
             <div className="flex items-center justify-center w-full">
-                {status === "error" && <span>Something went wrong</span>}
                 {status === "pending" ? (
                     "loading...."
                 ) : (

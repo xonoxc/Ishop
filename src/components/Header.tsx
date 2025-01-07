@@ -1,108 +1,114 @@
 "use client"
-import { useNotification } from "@/components/Notification"
-import { Home, LogOut, Package, User } from "lucide-react"
+
+import {
+    Home,
+    LayoutDashboard,
+    LogOut,
+    Package,
+    Menu,
+    UserCircle,
+} from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
+import { useToast } from "@/hooks/use-toast"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
 
 const HeaderlessRoutes = ["/register", "/login"]
 
 export default function Header() {
     const pathname = usePathname()
-    if (HeaderlessRoutes.includes(pathname)) return null
-
     const { data: session } = useSession()
-    const { showNotification } = useNotification()
+    const { toast } = useToast()
 
     const handleSignOut = async () => {
         try {
             await signOut()
-            showNotification("Signed out successfully", "success")
+            toast({
+                title: "Signed out successfully",
+            })
         } catch (error) {
-            showNotification("Failed to sign out", "error")
+            toast({
+                title: "Failed to sign out",
+                variant: "destructive",
+            })
         }
     }
 
+    if (HeaderlessRoutes.includes(pathname)) return null
+
     return (
-        <header className="navbar bg-base-300 sticky top-0 z-40 shadow-md w-full  flex items-center justify-center">
-            <div className="container mx-auto flex items-center justify-between">
+        <header className="sticky top-0 z-40 w-full shadow-md bg-background">
+            <div className="container mx-auto flex items-center justify-between h-16">
                 <Link
                     href="/"
-                    className="btn btn-ghost text-xl gap-2 normal-case font-bold"
+                    className="flex items-center gap-2 text-xl font-bold"
                     aria-label="Home"
-                    onClick={() =>
-                        showNotification("Welcome to ImageKit Shop", "info")
-                    }
                 >
-                    <span className="flex items-center gap-2">
-                        <Home className="w-5 h-5" />
-                        ImageKit Shop
-                    </span>
+                    <Home className="w-5 h-5" />
+                    ImageKit Shop
                 </Link>
-                <div className="flex items-center gap-2">
-                    <div className="dropdown dropdown-end flex">
-                        <ul
-                            tabIndex={0}
-                            className="dropdown-content z-50 bg-base-100 shadow-lg rounded-box w-64 mt-2 py-2"
-                        >
+
+                <div className="flex gap-2 text-center justify-center">
+                    {session && (
+                        <div className="username flex items-center justify-center">
+                            <UserCircle className="w-4 h-4" />
+                            <span>{session.user?.email?.split("@")[0]}</span>
+                        </div>
+                    )}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                                <Menu className="h-5 w-5" />
+                                <span className="sr-only">Open menu</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56">
                             {session ? (
-                                <div className="flex items-center justify-center gap-2">
-                                    <li className="px-4 py-1 text-sm text-gray-500 flex gap-1">
-                                        <User className="w-5 h-5" />
-                                        {session.user?.email?.split("@")[0]}
-                                    </li>
+                                <>
                                     {session.user?.role === "admin" && (
-                                        <li>
+                                        <DropdownMenuItem asChild>
                                             <Link
                                                 href="/admin"
-                                                className="block px-4 py-2 hover:bg-base-200"
-                                                onClick={() =>
-                                                    showNotification(
-                                                        "Welcome to Admin Dashboard",
-                                                        "info"
-                                                    )
-                                                }
+                                                className="flex items-center gap-2"
                                             >
-                                                Admin Dashboard
+                                                <LayoutDashboard className="w-4 h-4" />
+                                                <span>Admin Dashboard</span>
                                             </Link>
-                                        </li>
+                                        </DropdownMenuItem>
                                     )}
-                                    <li>
+                                    <DropdownMenuItem asChild>
                                         <Link
                                             href="/orders"
-                                            className="block px-2 py-2 hover:bg-base-200 text-sm"
+                                            className="flex items-center gap-2"
                                         >
-                                            <Package />
+                                            <Package className="w-4 h-4" />
+                                            <span>Orders</span>
                                         </Link>
-                                    </li>
-                                    <li>
-                                        <button
-                                            onClick={handleSignOut}
-                                            className="bg-white text-black p-2 rounded-lg flex items-center text-sm gap-2"
-                                        >
-                                            Logout
-                                            <LogOut size={14} />
-                                        </button>
-                                    </li>
-                                </div>
-                            ) : (
-                                <li>
-                                    <Link
-                                        href="/login"
-                                        className="block px-4 py-2 hover:bg-base-200"
-                                        onClick={() =>
-                                            showNotification(
-                                                "Please sign in to continue",
-                                                "info"
-                                            )
-                                        }
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        onSelect={handleSignOut}
+                                        className="text-red-600"
                                     >
-                                        Login
-                                    </Link>
-                                </li>
+                                        <LogOut className="w-4 h-4 mr-2" />
+                                        <span>Logout</span>
+                                    </DropdownMenuItem>
+                                </>
+                            ) : (
+                                <DropdownMenuItem asChild>
+                                    <Link href="/login">Login</Link>
+                                </DropdownMenuItem>
                             )}
-                        </ul>
-                    </div>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </div>
         </header>

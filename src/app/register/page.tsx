@@ -5,19 +5,23 @@ import { useState } from "react"
 import { useNotification } from "@/components/Notification"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 export default function Register() {
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
     const [confirmPassword, setConfirmPassword] = useState<string>("")
     const router = useRouter()
-    const { showNotification } = useNotification()
+    const { toast } = useToast()
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
         if (password !== confirmPassword) {
-            showNotification("Passwords do not match", "error")
+            toast({
+                title: "Passwords do not match",
+                variant: "destructive",
+            })
             return
         }
 
@@ -34,16 +38,18 @@ export default function Register() {
                 throw new Error(data.error || "Registration failed")
             }
 
-            showNotification(
-                "Registration successful! Please log in.",
-                "success"
-            )
+            toast({
+                title: "Registration successful! Please log in.",
+            })
             router.push("/login")
         } catch (error) {
-            showNotification(
-                error instanceof Error ? error.message : "Registration failed",
-                "error"
-            )
+            toast({
+                title:
+                    error instanceof Error
+                        ? error.message
+                        : "Registration failed",
+                variant: "destructive",
+            })
         }
     }
 
