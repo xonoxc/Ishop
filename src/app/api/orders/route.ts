@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
             userId: session.user.id,
             productId,
             variant,
-            razorpayId: order.id,
+            razorpayOrderId: order.id,
             amount: variant.price,
             status: "pending",
         })

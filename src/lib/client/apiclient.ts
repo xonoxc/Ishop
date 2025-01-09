@@ -75,7 +75,7 @@ class ApiClient {
         const { data, error } = await this.fetch<{
             orderId: string
             amount: number
-        }>("/orders", {
+        }>("/api/orders", {
             method: "POST",
             body: sanitizedOrderData,
         })

@@ -1,4 +1,5 @@
 "use client"
+
 import { useToast } from "@/hooks/use-toast"
 import { apiClient } from "@/lib/client/apiclient"
 import { IOrder } from "@/models/order"
@@ -7,6 +8,10 @@ import { IKImage } from "imagekitio-next"
 import { Download, Loader2 } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function Order() {
     const [orders, setOrders] = useState<IOrder[]>([])
@@ -22,28 +27,55 @@ export default function Order() {
                 if (error) {
                     toast({
                         title: "Something went wrong",
+                        description:
+                            "Failed to fetch orders. Please try again.",
                         variant: "destructive",
                     })
                 }
                 setOrders(data?.validOrders as IOrder[])
             } catch (error) {
                 console.error("Error while fetching orders", error)
+                toast({
+                    title: "Error",
+                    description:
+                        "An unexpected error occurred. Please try again.",
+                    variant: "destructive",
+                })
             } finally {
                 setLoading(false)
             }
         }
         fetchOrders()
-    }, [session])
+    }, [session, toast])
 
-    if (loading)
+    if (loading) {
         return (
-            <div className="min-h-[70vh] flex justify-center items-center">
-                <Loader2 className="w-12 h-12 animate-spin text-primary" />
+            <div className="container mx-auto px-4 py-8">
+                <h1 className="text-3xl font-bold mb-8 text-white">
+                    My Orders
+                </h1>
+                <div className="space-y-6">
+                    {[...Array(3)].map((_, index) => (
+                        <Card key={index} className="border-gray-800">
+                            <CardContent className="p-6">
+                                <div className="flex flex-col md:flex-row gap-6">
+                                    <Skeleton className="w-[200px] h-[200px] rounded-lg" />
+                                    <div className="flex-grow space-y-4">
+                                        <Skeleton className="h-6 w-1/4" />
+                                        <Skeleton className="h-4 w-1/3" />
+                                        <Skeleton className="h-4 w-1/2" />
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
             </div>
         )
+    }
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8  min-h-screen text-white">
             <h1 className="text-3xl font-bold mb-8">My Orders</h1>
             <div className="space-y-6">
                 {orders?.map(order => {
@@ -55,15 +87,15 @@ export default function Order() {
                     const product = order?.productId as any
 
                     return (
-                        <div
+                        <Card
                             key={order?._id?.toString()}
-                            className="card bg-base-100 shadow-xl"
+                            className="bg-black border-gray-800"
                         >
-                            <div className="card-body">
+                            <CardContent className="p-6">
                                 <div className="flex flex-col md:flex-row gap-6">
                                     {/* Preview Image - Low Quality */}
                                     <div
-                                        className="relative rounded-lg overflow-hidden bg-base-200"
+                                        className="relative rounded-lg overflow-hidden bg-gray-800"
                                         style={{
                                             width: "200px",
                                             aspectRatio: `${variantDimensions.width} / ${variantDimensions.height}`,
@@ -100,7 +132,7 @@ export default function Order() {
                                                         ?.toString()
                                                         .slice(-6)}
                                                 </h2>
-                                                <div className="space-y-1 text-base-content/70">
+                                                <div className="space-y-2 text-gray-300">
                                                     <p>
                                                         Resolution:{" "}
                                                         {
@@ -123,19 +155,19 @@ export default function Order() {
                                                     </p>
                                                     <p>
                                                         Status:{" "}
-                                                        <span
-                                                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                        <Badge
+                                                            variant={
                                                                 order.status ===
                                                                 "completed"
-                                                                    ? "bg-success/20 text-success"
+                                                                    ? "success"
                                                                     : order.status ===
                                                                         "failed"
-                                                                      ? "bg-error/20 text-error"
-                                                                      : "bg-warning/20 text-warning"
-                                                            }`}
+                                                                      ? "destructive"
+                                                                      : "warning"
+                                                            }
                                                         >
                                                             {order.status}
-                                                        </span>
+                                                        </Badge>
                                                     </p>
                                                 </div>
                                             </div>
@@ -146,34 +178,40 @@ export default function Order() {
                                                 </p>
                                                 {order.status ===
                                                     "completed" && (
-                                                    <a
-                                                        href={`${process.env.NEXT_PUBLIC_URL_ENDPOINT}/tr:q-100,w-${variantDimensions.width},h-${variantDimensions.height},cm-extract,fo-center/${product.imageUrl}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="btn btn-primary gap-2"
-                                                        download={`image-${order._id
-                                                            ?.toString()
-                                                            .slice(-6)}.jpg`}
+                                                    <Button
+                                                        asChild
+                                                        className="gap-2"
                                                     >
-                                                        <Download className="w-4 h-4" />
-                                                        Download High Quality
-                                                    </a>
+                                                        <a
+                                                            href={`${process.env.NEXT_PUBLIC_URL_ENDPOINT}/tr:q-100,w-${variantDimensions.width},h-${variantDimensions.height},cm-extract,fo-center/${product.imageUrl}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            download={`image-${order._id?.toString().slice(-6)}.jpg`}
+                                                        >
+                                                            <Download className="w-4 h-4" />
+                                                            Download High
+                                                            Quality
+                                                        </a>
+                                                    </Button>
                                                 )}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
+                            </CardContent>
+                        </Card>
                     )
                 })}
 
                 {orders?.length === 0 && (
-                    <div className="text-center py-12">
-                        <div className="text-base-content/70 text-lg">
-                            No orders found
-                        </div>
-                    </div>
+                    <Card className="bg-black border-gray-800">
+                        <CardContent className="flex flex-col items-center justify-center py-12">
+                            <Loader2 className="w-12 h-12 text-gray-400 mb-4 animate-spin" />
+                            <p className="text-gray-400 text-lg">
+                                No orders found
+                            </p>
+                        </CardContent>
+                    </Card>
                 )}
             </div>
         </div>
