@@ -20,6 +20,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import Logo from "@/components/Logo"
 
 const HeaderlessRoutes = ["/register", "/login"]
 
@@ -52,8 +53,7 @@ export default function Header() {
                     className="flex items-center gap-2 text-xl font-bold"
                     aria-label="Home"
                 >
-                    <Home className="w-5 h-5" />
-                    ImageKit Shop
+                    <Logo />
                 </Link>
 
                 <div className="flex gap-2 text-center justify-center">

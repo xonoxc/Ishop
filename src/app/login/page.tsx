@@ -43,7 +43,7 @@ export default function Login() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-[#161617] to-black text-white p-6">
+        <div className="min-h-screen bg-gradient-to-b from-[#161617] to-black text-white p-6 space-y-40">
             <button
                 onClick={() => router.back()}
                 className="flex items-center text-sm text-gray-400 hover:text-white"

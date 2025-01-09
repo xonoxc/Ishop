@@ -159,11 +159,11 @@ export default function Order() {
                                                             variant={
                                                                 order.status ===
                                                                 "completed"
-                                                                    ? "success"
+                                                                    ? "default"
                                                                     : order.status ===
                                                                         "failed"
                                                                       ? "destructive"
-                                                                      : "warning"
+                                                                      : "secondary"
                                                             }
                                                         >
                                                             {order.status}
