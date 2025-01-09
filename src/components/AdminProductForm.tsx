@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useForm, useFieldArray, Controller } from "react-hook-form"
-import { Loader2, Plus, Trash2, Upload } from "lucide-react"
+import { ImagePlus, Loader2, Plus, Trash2, Upload } from "lucide-react"
 import { IKUploadResponse } from "imagekitio-next/dist/types/components/IKUpload/props"
 import { IMAGE_VARIANTS, ImageVariantType } from "@/models/product"
 import { apiClient, ProductFormData } from "@/lib/client/apiclient"
@@ -103,7 +103,8 @@ export default function AdminProductForm() {
                 className="max-w-3xl mx-auto space-y-8"
             >
                 <div className="space-y-2 text-center">
-                    <h1 className="text-3xl font-semibold tracking-tight">
+                    <h1 className="text-3xl font-semibold tracking-tight flex items-center justify-center gap-2">
+                        <ImagePlus />
                         Create New Product
                     </h1>
                     <p className="text-muted-foreground">

@@ -2,16 +2,19 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { useNotification } from "@/components/Notification"
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 export default function Register() {
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
     const [confirmPassword, setConfirmPassword] = useState<string>("")
+    const [showPassword, setShowPassword] = useState<boolean>(false)
+    const [showConfirmPassword, setShowConfirmPassword] =
+        useState<boolean>(false)
     const router = useRouter()
+    const [loading, setLoading] = useState<boolean>(false)
     const { toast } = useToast()
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -26,6 +29,7 @@ export default function Register() {
         }
 
         try {
+            setLoading(true)
             const res = await fetch("/api/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -50,7 +54,17 @@ export default function Register() {
                         : "Registration failed",
                 variant: "destructive",
             })
+        } finally {
+            setLoading(false)
         }
+    }
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword)
+    }
+
+    const toggleConfirmPasswordVisibility = () => {
+        setShowConfirmPassword(!showConfirmPassword)
     }
 
     return (
@@ -70,7 +84,9 @@ export default function Register() {
                     </h1>
                     <p className="text-sm text-gray-400">
                         Already have an account?{" "}
-                        <Link href="/login">Sign in</Link>
+                        <Link href="/login" className="text-gray-400">
+                            Sign in
+                        </Link>
                     </p>
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -82,27 +98,60 @@ export default function Register() {
                         required
                         className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-white/20"
                     />
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
-                        placeholder="Password"
-                        required
-                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-white/20"
-                    />
-                    <input
-                        type="password"
-                        value={confirmPassword}
-                        onChange={e => setConfirmPassword(e.target.value)}
-                        placeholder="Confirm password"
-                        required
-                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-white/20"
-                    />
+                    <div className="relative">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
+                            placeholder="Password"
+                            required
+                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-white/20 pr-10"
+                        />
+                        <button
+                            type="button"
+                            onClick={togglePasswordVisibility}
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white"
+                        >
+                            {showPassword ? (
+                                <EyeOff className="h-5 w-5" />
+                            ) : (
+                                <Eye className="h-5 w-5" />
+                            )}
+                        </button>
+                    </div>
+                    <div className="relative">
+                        <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            value={confirmPassword}
+                            onChange={e => setConfirmPassword(e.target.value)}
+                            placeholder="Confirm password"
+                            required
+                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-white/20 pr-10"
+                        />
+                        <button
+                            type="button"
+                            onClick={toggleConfirmPasswordVisibility}
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white"
+                        >
+                            {showConfirmPassword ? (
+                                <EyeOff className="h-5 w-5" />
+                            ) : (
+                                <Eye className="h-5 w-5" />
+                            )}
+                        </button>
+                    </div>
                     <button
                         type="submit"
-                        className="w-full bg-white text-black py-3 rounded-lg font-medium hover:bg-white/90"
+                        className="w-full bg-white text-black py-3 rounded-lg font-medium hover:bg-white/90 flex items-center justify-center"
                     >
-                        Create account
+                        {loading ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                <span>creating your account...</span>
+                            </>
+                        ) : (
+                            "Create account"
+                        )}
                     </button>
                 </form>
             </div>

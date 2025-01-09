@@ -294,26 +294,30 @@ export default function ProductPage() {
                             </div>
                         </TabsContent>
                         <TabsContent value="license">
-                            <Card>
+                            <Card className="rounded-2xl">
                                 <CardContent className="p-4">
                                     <h3 className="font-semibold mb-2">
                                         License Information
                                     </h3>
                                     <ul className="space-y-2">
-                                        <li className="flex items-center gap-2">
-                                            <Check className="w-4 h-4 text-green-500" />
-                                            <span>
-                                                Personal: Use in personal
-                                                projects
-                                            </span>
-                                        </li>
-                                        <li className="flex items-center gap-2">
-                                            <Check className="w-4 h-4 text-green-500" />
-                                            <span>
-                                                Commercial: Use in commercial
-                                                projects
-                                            </span>
-                                        </li>
+                                        {selectedVariant?.license ===
+                                        "personal" ? (
+                                            <li className="flex items-center gap-2">
+                                                <Check className="w-4 h-4 text-green-500" />
+                                                <span>
+                                                    Personal: Use in personal
+                                                    projects
+                                                </span>
+                                            </li>
+                                        ) : (
+                                            <li className="flex items-center gap-2">
+                                                <Check className="w-4 h-4 text-green-500" />
+                                                <span>
+                                                    Commercial: Use in
+                                                    commercial projects
+                                                </span>
+                                            </li>
+                                        )}
                                     </ul>
                                 </CardContent>
                             </Card>

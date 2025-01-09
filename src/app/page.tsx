@@ -17,7 +17,6 @@ export default function Home() {
             try {
                 setStatus("pending")
                 const { data, error } = await apiClient.getProducts()
-                console.log("data", data)
                 if (error) {
                     toast({
                         title: JSON.parse(error).error,
