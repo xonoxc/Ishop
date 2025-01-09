@@ -206,7 +206,6 @@ export default function Order() {
                 {orders?.length === 0 && (
                     <Card className="bg-black border-gray-800">
                         <CardContent className="flex flex-col items-center justify-center py-12">
-                            <Loader2 className="w-12 h-12 text-gray-400 mb-4 animate-spin" />
                             <p className="text-gray-400 text-lg">
                                 No orders found
                             </p>

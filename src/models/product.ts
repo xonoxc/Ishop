@@ -37,6 +37,7 @@ export interface IProduct {
     imageUrl: string
     variants: ImageVariant[]
     _id?: mongoose.Types.ObjectId
+    categoryId: mongoose.Types.ObjectId | string
     createdAt?: Date
     updatedAt?: Date
 }
@@ -74,6 +75,11 @@ const productSchema = new Schema<IProduct>(
             required: true,
         },
         variants: [imageVariantSchema],
+        categoryId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Category",
+            required: true,
+        },
     },
     { timestamps: true }
 )

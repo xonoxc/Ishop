@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm, useFieldArray, Controller } from "react-hook-form"
 import { ImagePlus, Loader2, Plus, Trash2, Upload } from "lucide-react"
 import { IKUploadResponse } from "imagekitio-next/dist/types/components/IKUpload/props"
@@ -21,9 +21,11 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import FileUpload from "./FileUpload"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { ICategory } from "@/models/category"
 
 export default function AdminProductForm() {
     const [loading, setLoading] = useState(false)
+    const [categories, setCategories] = useState<ICategory[]>([])
     const { toast } = useToast()
 
     const {
@@ -38,6 +40,7 @@ export default function AdminProductForm() {
             name: "",
             description: "",
             imageUrl: "",
+            categoryId: "",
             variants: [
                 {
                     type: "SQUARE" as ImageVariantType,
@@ -54,6 +57,31 @@ export default function AdminProductForm() {
     })
 
     const watchImageUrl = watch("imageUrl")
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const { data, error } = await apiClient.getCategories()
+                if (error) {
+                    toast({
+                        title: error,
+                        variant: "destructive",
+                    })
+                    return
+                }
+                setCategories(data?.categories as ICategory[])
+            } catch (error) {
+                console.error("Failed to fetch categories:", error)
+                toast({
+                    title: "Error",
+                    description: "Failed to load categories",
+                    variant: "destructive",
+                })
+            }
+        }
+
+        fetchCategories()
+    }, [toast])
 
     const handleUploadSuccess = (response: IKUploadResponse) => {
         setValue("imageUrl", response.filePath)
@@ -75,6 +103,7 @@ export default function AdminProductForm() {
             setValue("name", "")
             setValue("description", "")
             setValue("imageUrl", "")
+            setValue("categoryId", "")
             setValue("variants", [
                 {
                     type: "SQUARE" as ImageVariantType,
@@ -97,26 +126,29 @@ export default function AdminProductForm() {
     }
 
     return (
-        <div className="min-h-screen bg-background p-6">
+        <div className="min-h-screen bg-background p-4 sm:p-6">
             <form
                 onSubmit={handleSubmit(onSubmit)}
                 className="max-w-3xl mx-auto space-y-8"
             >
+                {/* Header */}
                 <div className="space-y-2 text-center">
-                    <h1 className="text-3xl font-semibold tracking-tight flex items-center justify-center gap-2">
-                        <ImagePlus />
+                    <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight flex items-center justify-center gap-2">
+                        <ImagePlus className="hidden sm:inline" />
                         Create New Product
                     </h1>
-                    <p className="text-muted-foreground">
+                    <p className="text-sm sm:text-base text-muted-foreground">
                         Add a new product to your store with variants and
                         pricing.
                     </p>
                 </div>
 
-                <Card className="border-2 border-dashed">
+                {/* Product Details */}
+                <Card className="border-2 border-dashed rounded-xl">
                     <CardContent className="pt-6">
                         <div className="grid gap-6">
                             <div className="space-y-4">
+                                {/* Product Name */}
                                 <div className="space-y-2">
                                     <Label htmlFor="name" className="text-base">
                                         Product Name
@@ -126,7 +158,9 @@ export default function AdminProductForm() {
                                         {...register("name", {
                                             required: "Name is required",
                                         })}
-                                        className={`h-12 text-lg ${errors.name ? "border-red-500" : ""}`}
+                                        className={`h-10 sm:h-12 text-base sm:text-lg rounded-xl ${
+                                            errors.name ? "border-red-500" : ""
+                                        }`}
                                         placeholder="Enter product name"
                                     />
                                     {errors.name && (
@@ -136,6 +170,7 @@ export default function AdminProductForm() {
                                     )}
                                 </div>
 
+                                {/* Description */}
                                 <div className="space-y-2">
                                     <Label
                                         htmlFor="description"
@@ -148,7 +183,11 @@ export default function AdminProductForm() {
                                         {...register("description", {
                                             required: "Description is required",
                                         })}
-                                        className={`min-h-[120px] text-base ${errors.description ? "border-red-500" : ""}`}
+                                        className={`min-h-[100px] sm:min-h-[120px] text-sm sm:text-base rounded-xl ${
+                                            errors.description
+                                                ? "border-red-500"
+                                                : ""
+                                        }`}
                                         placeholder="Enter product description"
                                     />
                                     {errors.description && (
@@ -158,18 +197,74 @@ export default function AdminProductForm() {
                                     )}
                                 </div>
 
+                                {/* Category */}
+                                <div className="space-y-2">
+                                    <Label
+                                        htmlFor="categoryId"
+                                        className="text-base"
+                                    >
+                                        Category
+                                    </Label>
+                                    <Controller
+                                        name="categoryId"
+                                        control={control}
+                                        rules={{
+                                            required: "Category is required",
+                                        }}
+                                        render={({ field }) => (
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                value={String(field.value)}
+                                            >
+                                                <SelectTrigger
+                                                    className={`h-10 sm:h-12 rounded-xl  ${
+                                                        errors.categoryId
+                                                            ? "border-red-500"
+                                                            : ""
+                                                    }`}
+                                                >
+                                                    <SelectValue placeholder="Select a category" />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-xl">
+                                                    {categories?.map(
+                                                        category => (
+                                                            <SelectItem
+                                                                key={String(
+                                                                    category._id
+                                                                )}
+                                                                value={String(
+                                                                    category._id
+                                                                )}
+                                                                className="rounded-xl"
+                                                            >
+                                                                {category.name}
+                                                            </SelectItem>
+                                                        )
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
+                                        )}
+                                    />
+                                    {errors.categoryId && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.categoryId.message}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Product Image */}
                                 <div className="space-y-4">
                                     <Label className="text-base">
                                         Product Image
                                     </Label>
-                                    <div className="border-2 border-dashed rounded-lg p-8 text-center space-y-4">
+                                    <div className="border-2 border-dashed  p-4 sm:p-8 text-center space-y-4 rounded-xl">
                                         {!watchImageUrl ? (
                                             <div className="space-y-4">
-                                                <div className="mx-auto w-16 h-16 rounded-full bg-muted/30 flex items-center justify-center">
-                                                    <Upload className="w-8 h-8 text-muted-foreground" />
+                                                <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-muted/30 flex items-center justify-center">
+                                                    <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground" />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <p className="text-sm text-muted-foreground">
+                                                    <p className="text-xs sm:text-sm text-muted-foreground">
                                                         Drag and drop your image
                                                         here, or click to select
                                                     </p>
@@ -186,7 +281,7 @@ export default function AdminProductForm() {
                                             </div>
                                         ) : (
                                             <div className="space-y-4">
-                                                <div className="relative w-32 h-32 mx-auto rounded-lg overflow-hidden">
+                                                <div className="relative w-24 h-24 sm:w-32 sm:h-32 mx-auto rounded-lg overflow-hidden">
                                                     <img
                                                         src={watchImageUrl}
                                                         alt="Product preview"
@@ -207,13 +302,14 @@ export default function AdminProductForm() {
                     </CardContent>
                 </Card>
 
+                {/* Image Variants */}
                 <div className="space-y-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-xl font-semibold tracking-tight">
+                            <h2 className="text-lg sm:text-xl font-semibold tracking-tight">
                                 Image Variants
                             </h2>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-xs sm:text-sm text-muted-foreground">
                                 Configure size and pricing options for your
                                 product.
                             </p>
@@ -222,6 +318,7 @@ export default function AdminProductForm() {
                             type="button"
                             variant="outline"
                             size="sm"
+                            className="rounded-xl"
                             onClick={() =>
                                 append({
                                     type: "SQUARE" as ImageVariantType,
@@ -235,28 +332,34 @@ export default function AdminProductForm() {
                         </Button>
                     </div>
 
-                    <ScrollArea className="h-[400px]">
+                    <ScrollArea className="h-[300px] sm:h-[400px]">
                         <div className="space-y-4">
                             {fields.map((field, index) => (
-                                <Card key={field.id} className="relative group">
+                                <Card
+                                    key={field.id}
+                                    className="relative group rounded-xl"
+                                >
                                     <CardContent className="pt-6">
-                                        <div className="absolute -top-3 -right-3">
-                                            <Button
-                                                type="button"
-                                                variant="destructive"
-                                                size="icon"
-                                                className="h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                                onClick={() => remove(index)}
-                                                disabled={fields.length === 1}
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </Button>
+                                        <div className="flex items-center justify-end">
+                                            {!(fields.length === 1) && (
+                                                <Button
+                                                    type="button"
+                                                    size="icon"
+                                                    className="rounded-full"
+                                                    onClick={() =>
+                                                        remove(index)
+                                                    }
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </Button>
+                                            )}
                                         </div>
-                                        <div className="grid gap-6 sm:grid-cols-3">
+                                        <div className="grid gap-4 sm:gap-6 sm:grid-cols-3">
+                                            {/* Size */}
                                             <div className="space-y-2">
                                                 <Label
                                                     htmlFor={`variants.${index}.type`}
-                                                    className="text-sm"
+                                                    className="text-xs sm:text-sm"
                                                 >
                                                     Size & Aspect Ratio
                                                 </Label>
@@ -270,10 +373,10 @@ export default function AdminProductForm() {
                                                             }
                                                             value={field.value}
                                                         >
-                                                            <SelectTrigger>
+                                                            <SelectTrigger className="rounded-xl">
                                                                 <SelectValue placeholder="Select size" />
                                                             </SelectTrigger>
-                                                            <SelectContent>
+                                                            <SelectContent className="rounded-xl">
                                                                 {Object.entries(
                                                                     IMAGE_VARIANTS
                                                                 ).map(
@@ -288,6 +391,7 @@ export default function AdminProductForm() {
                                                                             value={
                                                                                 value.type
                                                                             }
+                                                                            className="rounded-xl"
                                                                         >
                                                                             {
                                                                                 value.label
@@ -297,8 +401,8 @@ export default function AdminProductForm() {
                                                                                 value
                                                                                     .dimensions
                                                                                     .width
-                                                                            }
-                                                                            x
+                                                                            }{" "}
+                                                                            x{" "}
                                                                             {
                                                                                 value
                                                                                     .dimensions
@@ -314,10 +418,11 @@ export default function AdminProductForm() {
                                                 />
                                             </div>
 
+                                            {/* License */}
                                             <div className="space-y-2">
                                                 <Label
                                                     htmlFor={`variants.${index}.license`}
-                                                    className="text-sm"
+                                                    className="text-xs sm:text-sm"
                                                 >
                                                     License
                                                 </Label>
@@ -331,14 +436,20 @@ export default function AdminProductForm() {
                                                             }
                                                             value={field.value}
                                                         >
-                                                            <SelectTrigger>
+                                                            <SelectTrigger className="rounded-xl">
                                                                 <SelectValue placeholder="Select license" />
                                                             </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="personal">
+                                                            <SelectContent className="rounded-xl">
+                                                                <SelectItem
+                                                                    value="personal"
+                                                                    className="rounded-xl"
+                                                                >
                                                                     Personal Use
                                                                 </SelectItem>
-                                                                <SelectItem value="commercial">
+                                                                <SelectItem
+                                                                    value="commercial"
+                                                                    className="rounded-xl"
+                                                                >
                                                                     Commercial
                                                                     Use
                                                                 </SelectItem>
@@ -348,10 +459,11 @@ export default function AdminProductForm() {
                                                 />
                                             </div>
 
+                                            {/* Price */}
                                             <div className="space-y-2">
                                                 <Label
                                                     htmlFor={`variants.${index}.price`}
-                                                    className="text-sm"
+                                                    className="text-xs sm:text-sm"
                                                 >
                                                     Price ($)
                                                 </Label>
@@ -376,12 +488,12 @@ export default function AdminProductForm() {
                                                         errors.variants?.[index]
                                                             ?.price
                                                             ? "border-red-500"
-                                                            : ""
+                                                            : "" + "rounded-xl"
                                                     }
                                                 />
                                                 {errors.variants?.[index]
                                                     ?.price && (
-                                                    <p className="text-sm text-red-500">
+                                                    <p className="text-xs sm:text-sm text-red-500">
                                                         {
                                                             errors.variants[
                                                                 index
@@ -398,13 +510,18 @@ export default function AdminProductForm() {
                     </ScrollArea>
                 </div>
 
-                <div className="flex justify-end gap-4">
-                    <Button type="button" variant="outline">
+                {/* Actions */}
+                <div className="flex flex-col sm:flex-row justify-end gap-4">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full sm:w-auto rounded-xl"
+                    >
                         Cancel
                     </Button>
                     <Button
                         type="submit"
-                        className="min-w-[120px]"
+                        className="w-full sm:w-auto min-w-[120px] rounded-xl"
                         disabled={loading}
                     >
                         {loading ? (

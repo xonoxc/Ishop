@@ -1,9 +1,10 @@
+import { ICategory } from "@/models/category"
 import { IOrder } from "@/models/order"
 import { ImageVariant, IProduct } from "@/models/product"
 import { Types } from "mongoose"
 
 type FetchOptions = {
-    method?: "GET" | "POST" | "PUT" | "DELETE"
+    method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH"
     body?: any
     headers?: Record<string, string>
 }
@@ -88,6 +89,35 @@ class ApiClient {
             orderId: string
             amount: number
         }
+    }
+
+    async getCategories() {
+        return this.fetch<{ categories: ICategory[] }>("/api/category")
+    }
+
+    async createCategory(name: string) {
+        const { error } = await this.fetch("/api/category", {
+            method: "POST",
+            body: {
+                name,
+            },
+        })
+
+        if (error) {
+            throw new Error(error)
+        }
+    }
+
+    async getProductByCategory(categoryId: string) {
+        return this.fetch<{ categoryProducts: IProduct[] }>(
+            "/api/category/products",
+            {
+                method: "POST",
+                body: {
+                    categoryId,
+                },
+            }
+        )
     }
 }
 

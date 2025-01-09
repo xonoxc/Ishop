@@ -13,13 +13,12 @@ export async function GET() {
         if (!products || products.length === 0) {
             return NextResponse.json(
                 { error: "No products found" },
-                { status: 404 }
+                { status: 200 }
             )
         }
 
         return NextResponse.json({ products }, { status: 200 })
     } catch (error) {
-        console.log(error)
         return NextResponse.json(
             { error: "Something went wrong" },
             { status: 500 }
@@ -44,7 +43,8 @@ export async function POST(request: NextRequest) {
             !body.name ||
             !body.description ||
             !body.imageUrl ||
-            body.variants.length === 0
+            body.variants.length === 0 ||
+            !body.categoryId
         ) {
             return NextResponse.json(
                 { error: "All fields are required" },
