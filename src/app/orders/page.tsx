@@ -5,13 +5,14 @@ import { apiClient } from "@/lib/client/apiclient"
 import { IOrder } from "@/models/order"
 import { IMAGE_VARIANTS } from "@/models/product"
 import { IKImage } from "imagekitio-next"
-import { Download, Loader2 } from "lucide-react"
+import { Download, Package } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
+import BackBtn from "@/components/BackBtn"
 
 export default function Order() {
     const [orders, setOrders] = useState<IOrder[]>([])
@@ -51,6 +52,7 @@ export default function Order() {
     if (loading) {
         return (
             <div className="container mx-auto px-4 py-8">
+                <BackBtn />
                 <h1 className="text-3xl font-bold mb-8 text-white">
                     My Orders
                 </h1>
@@ -76,7 +78,11 @@ export default function Order() {
 
     return (
         <div className="container mx-auto px-4 py-8  min-h-screen text-white">
-            <h1 className="text-3xl font-bold mb-8">My Orders</h1>
+            <BackBtn />
+            <h1 className="text-lg md:text-3xl font-bold mb-4 mx-24 flex items-center justify-center md:justify-start gap-2 mt-4">
+                My Orders
+                <Package className="w-4 h-4 md:w-8 md:h-8" />
+            </h1>
             <div className="space-y-6">
                 {orders?.map(order => {
                     const variantDimensions =
@@ -87,10 +93,7 @@ export default function Order() {
                     const product = order?.productId as any
 
                     return (
-                        <Card
-                            key={order?._id?.toString()}
-                            className="bg-black border-gray-800"
-                        >
+                        <Card key={order?._id?.toString()}>
                             <CardContent className="p-6">
                                 <div className="flex flex-col md:flex-row gap-6">
                                     {/* Preview Image - Low Quality */}
@@ -153,7 +156,7 @@ export default function Order() {
                                                             }
                                                         </span>
                                                     </p>
-                                                    <p>
+                                                    <div>
                                                         Status:{" "}
                                                         <Badge
                                                             variant={
@@ -168,7 +171,7 @@ export default function Order() {
                                                         >
                                                             {order.status}
                                                         </Badge>
-                                                    </p>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -202,15 +205,14 @@ export default function Order() {
                         </Card>
                     )
                 })}
-
                 {orders?.length === 0 && (
-                    <Card className="bg-black border-gray-800">
+                    <div>
                         <CardContent className="flex flex-col items-center justify-center py-12">
-                            <p className="text-gray-400 text-lg">
-                                No orders found
-                            </p>
+                            <div className="text-gray-400 text-lg">
+                                <p>No orders found</p>
+                            </div>
                         </CardContent>
-                    </Card>
+                    </div>
                 )}
             </div>
         </div>

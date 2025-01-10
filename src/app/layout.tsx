@@ -36,7 +36,7 @@ export default function RootLayout({
                 />
                 <Providers>
                     <Header />
-                    <main>{children}</main>
+                    <main className="overflow-clip">{children}</main>
                 </Providers>
             </body>
         </html>

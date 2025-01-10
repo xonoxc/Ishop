@@ -8,7 +8,6 @@ export async function GET() {
         await connectToDatabase()
 
         const categories = await Category.find({}).lean()
-
         if (categories.length === 0)
             return NextResponse.json(
                 {

@@ -4,18 +4,22 @@ import { useState, useEffect } from "react"
 import AdminProductForm from "@/components/AdminProductForm"
 import { CategoryForm } from "@/components/CategoryForm"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { AlignVerticalJustifyCenter } from "lucide-react"
+import BackBtn from "@/components/BackBtn"
 
 export default function Admin() {
     const [activeTab, setActiveTab] = useState("products")
 
     useEffect(() => {
-        // Reset scroll position when changing tabs
         window.scrollTo(0, 0)
     }, [activeTab])
 
     return (
         <div className="min-h-screen bg-background">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="px-4 mb-2">
+                    <BackBtn />
+                </div>
                 <Tabs
                     value={activeTab}
                     onValueChange={setActiveTab}
@@ -38,15 +42,13 @@ export default function Admin() {
                         </TabsList>
                     </div>
                     <TabsContent value="products" className="space-y-6">
-                        <h2 className="text-2xl font-bold text-center sm:text-left">
-                            Create Product
-                        </h2>
                         <div className="mx-auto max-w-3xl">
                             <AdminProductForm />
                         </div>
                     </TabsContent>
                     <TabsContent value="categories" className="space-y-6">
-                        <h2 className="text-2xl font-bold text-center sm:text-left">
+                        <h2 className="text-2xl font-bold text-center sm:text-left flex items-center justify-center gap-2">
+                            <AlignVerticalJustifyCenter />
                             Create Category
                         </h2>
                         <div className="mx-auto max-w-md">

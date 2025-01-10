@@ -21,6 +21,7 @@ import { apiClient } from "@/lib/client/apiclient"
 import { useSession } from "next-auth/react"
 import { IKImage } from "imagekitio-next"
 import { useToast } from "@/hooks/use-toast"
+import BackBtn from "@/components/BackBtn"
 
 export default function ProductPage() {
     const params: { id?: string } = useParams()
@@ -67,7 +68,6 @@ export default function ProductPage() {
         if (!session) {
             toast({
                 title: "Please sign in to purchase",
-                variant: "destructive",
             })
             router.push("/login")
             return
@@ -142,6 +142,9 @@ export default function ProductPage() {
 
     return (
         <div className="container mx-auto px-4 py-8">
+            <div className="w-full mb-8">
+                <BackBtn />
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Image Section */}
                 <div className="space-y-4">

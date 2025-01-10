@@ -13,7 +13,7 @@ export default function ProductCard({ product }: { product: IProduct }) {
     )
 
     return (
-        <Card className="overflow-hidden transition-all duration-300 mx-4">
+        <Card className="overflow-hidden transition-all duration-300 mx-4 w-3/9">
             <Link href={`/products/${product._id}`} className="block">
                 <div className="relative aspect-square overflow-hidden">
                     <IKImage

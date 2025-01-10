@@ -1,7 +1,6 @@
 "use client"
 
 import {
-    Home,
     LayoutDashboard,
     LogOut,
     Package,
@@ -21,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import Logo from "@/components/Logo"
+import { useRouter } from "next/navigation"
 
 const HeaderlessRoutes = ["/register", "/login"]
 
@@ -28,6 +28,7 @@ export default function Header() {
     const pathname = usePathname()
     const { data: session } = useSession()
     const { toast } = useToast()
+    const router = useRouter()
 
     const handleSignOut = async () => {
         try {
@@ -35,6 +36,7 @@ export default function Header() {
             toast({
                 title: "Signed out successfully",
             })
+            router.replace("/login")
         } catch (error) {
             toast({
                 title: "Failed to sign out",
@@ -50,7 +52,7 @@ export default function Header() {
             <div className="container mx-auto flex items-center justify-between h-16">
                 <Link
                     href="/"
-                    className="flex items-center gap-2 text-xl font-bold"
+                    className="px-3 flex items-center gap-2 text-xl font-bold"
                     aria-label="Home"
                 >
                     <Logo />

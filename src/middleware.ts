@@ -1,5 +1,5 @@
 import { withAuth } from "next-auth/middleware"
-import { NextResponse, NextRequest } from "next/server"
+import { NextResponse } from "next/server"
 
 export default withAuth(
     function middleware() {
@@ -22,6 +22,8 @@ export default withAuth(
                 if (
                     pathname === "/" ||
                     pathname.startsWith("/api/products") ||
+                    pathname.startsWith("/api/category") ||
+                    pathname.startsWith("/api/category/product") ||
                     pathname.startsWith("/products")
                 )
                     return true

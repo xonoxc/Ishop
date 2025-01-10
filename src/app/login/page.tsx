@@ -3,9 +3,10 @@
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
+import BackBtn from "@/components/BackBtn"
 
 export default function Login() {
     const [email, setEmail] = useState<string>("")
@@ -44,13 +45,7 @@ export default function Login() {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#161617] to-black text-white p-6 space-y-40">
-            <button
-                onClick={() => router.back()}
-                className="flex items-center text-sm text-gray-400 hover:text-white"
-            >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
-            </button>
+            <BackBtn />
             <div className="max-w-sm mx-auto mt-16 space-y-16">
                 <div className="flex flex-col items-center">
                     <div className="w-12 h-12 bg-white/10 rounded-full mb-6" />

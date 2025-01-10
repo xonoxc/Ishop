@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label"
 import FileUpload from "./FileUpload"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ICategory } from "@/models/category"
+import Image from "next/image"
 
 export default function AdminProductForm() {
     const [loading, setLoading] = useState(false)
@@ -282,7 +283,7 @@ export default function AdminProductForm() {
                                         ) : (
                                             <div className="space-y-4">
                                                 <div className="relative w-24 h-24 sm:w-32 sm:h-32 mx-auto rounded-lg overflow-hidden">
-                                                    <img
+                                                    <Image
                                                         src={watchImageUrl}
                                                         alt="Product preview"
                                                         className="object-cover w-full h-full"
