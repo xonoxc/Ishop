@@ -23,6 +23,7 @@
         "bcryptjs": "^2.4.3",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
+        "estore": "link:",
         "imagekit": "^6.0.0",
         "imagekitio-next": "^1.0.1",
         "lucide-react": "^0.469.0",

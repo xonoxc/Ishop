@@ -8,9 +8,9 @@ import { apiClient } from "@/lib/client/apiclient"
 import { RequestStatus } from "@/types/requestStatus"
 import ImageGallery from "@/components/ImageGallery"
 import { useToast } from "@/hooks/use-toast"
-import { Loader } from "@/components/Loader"
 import CategorySection from "@/components/CategorySection"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Loader } from "@/components/Loader"
 
 export default function Home() {
     return (
@@ -65,7 +65,6 @@ const Content = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            setStatus("pending")
             try {
                 await fetchCategories()
                 await fetchProducts()
@@ -88,15 +87,22 @@ const Content = () => {
         category => category._id.toString() === categoryId
     )
 
+    if (status === "pending") {
+        return (
+            <div className="flex min-h-screen bg-background flex-col">
+                <Loader />
+            </div>
+        )
+    }
+
     return (
         <div className="flex min-h-screen bg-background flex-col">
-            <main className="flex-1 container mx-auto px-4 py-8 ml-0 md:ml-64 transition-all duration-300 ease-in-out">
+            <main className="flex-1 container mx-auto px-4 py-8 transition-all duration-300 ease-in-out">
                 <CategorySection categories={categories} />
-                <h1 className="text-3xl font-bold mb-8 text-foreground mt-3 ml-4">
+                <h1 className="text-3xl font-bold mb-8 text-foreground mt-3 mx-0 md:mx-14">
                     {selectedCategory ? selectedCategory.name : "All Images"}
                 </h1>
-                <div className="w-full">
-                    {status === "pending" && <Loader />}
+                <div className="w-full px-6">
                     {status === "error" && (
                         <div className="text-center text-red-500">
                             Failed to load products. Please try again later.
@@ -112,22 +118,30 @@ const Content = () => {
 const HomeSkeleton = () => {
     return (
         <div className="flex min-h-screen bg-background flex-col">
-            <main className="flex-1 container mx-auto px-4 py-8 ml-0 md:ml-64 transition-all duration-300 ease-in-out">
-                <div className="flex space-x-4 mb-8 overflow-x-auto">
+            <main className="flex-1 container mx-auto px-4 py-8 transition-all duration-300 ease-in-out">
+                {/* Category Section Skeleton */}
+                <div className="flex space-x-2 mb-8 overflow-x-auto">
                     {[...Array(5)].map((_, i) => (
-                        <Skeleton key={i} className="w-32 h-10 rounded-full" />
+                        <Skeleton
+                            key={i}
+                            className="w-32 h-10 rounded-2xl flex-shrink-0"
+                        />
                     ))}
                 </div>
 
-                <Skeleton className="h-10 w-64 mb-8" />
+                {/* Title Skeleton */}
+                <Skeleton className="h-10 w-64 mb-8 mt-3 mx-0 md:mx-14 rounded-xl" />
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {[...Array(12)].map((_, i) => (
-                        <Skeleton
-                            key={i}
-                            className="w-full aspect-square rounded-lg"
-                        />
-                    ))}
+                {/* Image Gallery Skeleton */}
+                <div className="w-full px-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {[...Array(8)].map((_, i) => (
+                            <Skeleton
+                                key={i}
+                                className="w-full aspect-[9/12] rounded-xl"
+                            />
+                        ))}
+                    </div>
                 </div>
             </main>
         </div>

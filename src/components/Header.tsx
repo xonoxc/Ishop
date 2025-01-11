@@ -19,10 +19,12 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import Logo from "@/components/Logo"
 import { useRouter } from "next/navigation"
+import dynamic from "next/dynamic"
 
 const HeaderlessRoutes = ["/register", "/login"]
+
+const Logo = dynamic(() => import("@/components/Logo"), { ssr: false })
 
 export default function Header() {
     const pathname = usePathname()

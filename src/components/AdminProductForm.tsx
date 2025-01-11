@@ -283,7 +283,7 @@ export default function AdminProductForm() {
                                         ) : (
                                             <div className="space-y-4">
                                                 <div className="relative w-24 h-24 sm:w-32 sm:h-32 mx-auto rounded-lg overflow-hidden">
-                                                    <Image
+                                                    <img
                                                         src={watchImageUrl}
                                                         alt="Product preview"
                                                         className="object-cover w-full h-full"

@@ -13,7 +13,7 @@ export default function ProductCard({ product }: { product: IProduct }) {
     )
 
     return (
-        <Card className="overflow-hidden transition-all duration-300 mx-4 w-3/9">
+        <Card className="overflow-hidden transition-all duration-300 mx-4 w-3/9 rounded-xl mb-3">
             <Link href={`/products/${product._id}`} className="block">
                 <div className="relative aspect-square overflow-hidden">
                     <IKImage
@@ -50,8 +50,8 @@ export default function ProductCard({ product }: { product: IProduct }) {
             </CardContent>
             <CardFooter className="flex items-center justify-between p-4">
                 <div className="flex flex-col">
-                    <span className="text-lg font-bold">
-                        From ${lowestPrice.toFixed(2)}
+                    <span className="text-lg font-bold ml-2">
+                        ${lowestPrice.toFixed(2)}
                     </span>
                     <Badge variant="secondary" className="mt-1">
                         <Tag className="mr-1 h-3 w-3" />
@@ -59,7 +59,7 @@ export default function ProductCard({ product }: { product: IProduct }) {
                     </Badge>
                 </div>
 
-                <Button asChild size="sm">
+                <Button asChild size="sm" className="ml-3 rounded-xl">
                     <Link href={`/products/${product._id}`}>
                         <Eye className="mr-2 h-4 w-4" />
                         View Options
