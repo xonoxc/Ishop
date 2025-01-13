@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast"
 import CategorySection from "@/components/CategorySection"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Loader } from "@/components/Loader"
+import { Loader2 } from "lucide-react"
 
 export default function Home() {
     return (
@@ -43,6 +44,7 @@ const Content = () => {
     const fetchProducts = useCallback(async () => {
         try {
             if (categoryId) {
+                setStatus("pending")
                 const { data, error } =
                     await apiClient.getProductByCategory(categoryId)
                 if (error) {
@@ -60,6 +62,8 @@ const Content = () => {
             }
         } catch (error) {
             throw error
+        } finally {
+            setStatus("idle")
         }
     }, [categoryId])
 
@@ -89,8 +93,8 @@ const Content = () => {
 
     if (status === "pending") {
         return (
-            <div className="flex min-h-screen bg-background flex-col">
-                <Loader />
+            <div className="min-h-[70vh] flex justify-center items-center">
+                <Loader2 className="w-12 h-12 animate-spin text-primary" />
             </div>
         )
     }
