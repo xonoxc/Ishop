@@ -2,7 +2,7 @@
 
 import { IProduct } from "@/models/product"
 import { ICategory } from "@/models/category"
-import { Suspense, useCallback, useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { apiClient } from "@/lib/client/apiclient"
 import { RequestStatus } from "@/types/requestStatus"
@@ -10,7 +10,6 @@ import ImageGallery from "@/components/ImageGallery"
 import { useToast } from "@/hooks/use-toast"
 import CategorySection from "@/components/CategorySection"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Loader } from "@/components/Loader"
 import { Loader2 } from "lucide-react"
 
 export default function Home() {
@@ -29,7 +28,7 @@ const Content = () => {
     const searchParams = useSearchParams()
     const categoryId = searchParams.get("categoryId")
 
-    const fetchCategories = useCallback(async () => {
+    const fetchCategories = async () => {
         try {
             const { data, error } = await apiClient.getCategories()
             if (error) {
@@ -39,9 +38,9 @@ const Content = () => {
         } catch (error) {
             throw error
         }
-    }, [])
+    }
 
-    const fetchProducts = useCallback(async () => {
+    const fetchProducts = async () => {
         try {
             if (categoryId) {
                 setStatus("pending")
@@ -65,7 +64,7 @@ const Content = () => {
         } finally {
             setStatus("idle")
         }
-    }, [categoryId])
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -85,7 +84,7 @@ const Content = () => {
         }
 
         fetchData()
-    }, [categoryId, toast, fetchProducts, fetchCategories])
+    }, [categoryId, toast])
 
     const selectedCategory = categories.find(
         category => category._id.toString() === categoryId
