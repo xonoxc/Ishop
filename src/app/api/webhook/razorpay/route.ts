@@ -6,7 +6,7 @@ import nodemailer from "nodemailer"
 
 export async function POST(request: NextRequest) {
     try {
-        const body = await request.json()
+        const body = await request.text()
         const signature = request.headers.get("x-razorpay-signature")
 
         const expectedSignature = crypto
