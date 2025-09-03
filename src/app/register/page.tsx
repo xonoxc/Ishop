@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import BackBtn from "@/components/BackBtn"
+import Image from "next/image"
 
 export default function Register() {
     const [email, setEmail] = useState<string>("")
@@ -73,7 +74,12 @@ export default function Register() {
             <BackBtn />
             <div className="max-w-sm mx-auto mt-12 space-y-8">
                 <div className="flex flex-col items-center">
-                    <div className="w-12 h-12 bg-white/10 rounded-full mb-6" />
+                    <Image
+                        src={"/ishop.png"}
+                        alt="Ishop"
+                        height={150}
+                        width={150}
+                    />
                     <h1 className="text-2xl font-semibold">
                         Create your account
                     </h1>

@@ -7,6 +7,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 import BackBtn from "@/components/BackBtn"
+import Image from "next/image"
 
 export default function Login() {
     const [email, setEmail] = useState<string>("")
@@ -48,7 +49,12 @@ export default function Login() {
             <BackBtn />
             <div className="max-w-sm mx-auto mt-16 space-y-16">
                 <div className="flex flex-col items-center">
-                    <div className="w-12 h-12 bg-white/10 rounded-full mb-6" />
+                    <Image
+                        src={"/ishop.png"}
+                        alt="Ishop"
+                        height={150}
+                        width={150}
+                    />
                     <h1 className="text-2xl font-semibold">
                         Yooo, welcome back!
                     </h1>
