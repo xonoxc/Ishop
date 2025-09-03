@@ -22,7 +22,6 @@ import { Label } from "@/components/ui/label"
 import FileUpload from "./FileUpload"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ICategory } from "@/models/category"
-import Image from "next/image"
 
 export default function AdminProductForm() {
     const [loading, setLoading] = useState(false)

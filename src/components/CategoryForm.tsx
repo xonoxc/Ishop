@@ -46,6 +46,7 @@ export function CategoryForm() {
             <div className="space-y-2">
                 <Label htmlFor="name">Category Name</Label>
                 <Input
+                    placeholder="e.g., Electronics"
                     id="name"
                     {...register("name", {
                         required: "Category name is required",

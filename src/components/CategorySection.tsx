@@ -17,9 +17,9 @@ export default function CategorySection({ categories }: CategorySectionProps) {
 
     return (
         <div className="w-full py-3 sticky top-0 z-10 mx-0 md:mx-10">
-            <ScrollArea className="w-full whitespace-nowrap">
+            <ScrollArea className="w-full whitespace-nowrap scroll-smooth">
                 <div className="flex space-x-2 px-4">
-                    <Link href={pathname} passHref>
+                    <Link href={pathname} passHref prefetch>
                         <Button
                             variant="ghost"
                             className={`rounded-xl text-sm font-medium ${
