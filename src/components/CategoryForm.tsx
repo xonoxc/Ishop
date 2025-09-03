@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { apiClient } from "@/lib/client/apiclient"
+import { useQueryClient } from "@tanstack/react-query"
 
 interface CategoryFormData {
     name: string
@@ -21,6 +22,8 @@ export function CategoryForm() {
         formState: { errors },
     } = useForm<CategoryFormData>()
 
+    const queryClient = useQueryClient()
+
     const onSubmit = async (data: CategoryFormData) => {
         setLoading(true)
         try {
@@ -29,6 +32,7 @@ export function CategoryForm() {
                 title: "Success",
                 description: "Category created successfully!",
             })
+            await queryClient.invalidateQueries({ queryKey: ["categories"] })
             reset()
         } catch (error) {
             toast({

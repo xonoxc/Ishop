@@ -22,11 +22,13 @@ import { Label } from "@/components/ui/label"
 import FileUpload from "./FileUpload"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ICategory } from "@/models/category"
+import { useQueryClient } from "@tanstack/react-query"
 
 export default function AdminProductForm() {
     const [loading, setLoading] = useState(false)
-    const [categories, setCategories] = useState<ICategory[]>([])
     const { toast } = useToast()
+
+    const queryClient = useQueryClient()
 
     const {
         register,
@@ -58,31 +60,6 @@ export default function AdminProductForm() {
 
     const watchImageUrl = watch("imageUrl")
 
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const { data, error } = await apiClient.getCategories()
-                if (error) {
-                    toast({
-                        title: error,
-                        variant: "destructive",
-                    })
-                    return
-                }
-                setCategories(data?.categories as ICategory[])
-            } catch (error) {
-                console.error("Failed to fetch categories:", error)
-                toast({
-                    title: "Error",
-                    description: "Failed to load categories",
-                    variant: "destructive",
-                })
-            }
-        }
-
-        fetchCategories()
-    }, [toast])
-
     const handleUploadSuccess = (response: IKUploadResponse) => {
         setValue("imageUrl", response.filePath)
         toast({
@@ -99,6 +76,8 @@ export default function AdminProductForm() {
                 title: "Success",
                 description: "Product created successfully!",
             })
+
+            await queryClient.invalidateQueries({ queryKey: ["categories"] })
 
             setValue("name", "")
             setValue("description", "")

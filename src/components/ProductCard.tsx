@@ -54,7 +54,15 @@ export default function ProductCard({ product }: { product: IProduct }) {
                     </div>
 
                     {/* Category badge (use first variant count as category-like info) */}
-                    <Badge className="absolute top-3 left-3 bg-primary/90 backdrop-blur-sm rounded-md opacity-80 border border-border/50 border-dashed">
+                    <Badge
+                        className="
+						absolute top-3 left-3 bg-primary/90 
+						backdrop-blur-sm rounded-md opacity-80
+						border border-border/50 border-dashed 
+						flex items-center justify-center gap-2
+						"
+                    >
+                        <Tag size={12} />
                         {product.variants.length} sizes
                     </Badge>
                 </div>

@@ -1,10 +1,6 @@
 "use client"
-import {
-    IMAGE_VARIANTS,
-    ImageVariant,
-    ImageVariantType,
-    IProduct,
-} from "@/models/product"
+
+import { IMAGE_VARIANTS } from "@/models/product"
 import {
     Loader2,
     AlertCircle,
@@ -15,128 +11,39 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useParams, useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
-import { apiClient } from "@/lib/client/apiclient"
-import { useSession } from "next-auth/react"
 import { IKImage } from "imagekitio-next"
-import { useToast } from "@/hooks/use-toast"
 import BackBtn from "@/components/BackBtn"
 
+import useProductPageState from "@/hooks/queries/states/useProductPageState"
+
 export default function ProductPage() {
-    const params: { id?: string } = useParams()
-    const [product, setProduct] = useState<IProduct | null>(null)
-    const [loading, setLoading] = useState<boolean>(false)
-    const [error, setError] = useState<string>("")
-    const [selectedVariant, setSelectedVariant] = useState<ImageVariant | null>(
-        null
-    )
+    const {
+        product,
+        isLoading,
+        isError,
+        error,
+        selectedVariant,
+        setSelectedVariant,
+        handlePurchase,
+        getTransformation,
+    } = useProductPageState()
 
-    const { toast } = useToast()
-    const router = useRouter()
-    const { data: session } = useSession()
-
-    useEffect(() => {
-        const fetchProduct = async () => {
-            const id = params?.id
-            if (!id) {
-                setError("Product ID is missing")
-                setLoading(false)
-                return
-            }
-            try {
-                setLoading(true)
-                const { data, error } = await apiClient.getProduct(
-                    id.toString()
-                )
-                if (error) {
-                    throw new Error(error)
-                }
-                if (data) {
-                    setProduct(data.product)
-                }
-            } catch (error) {
-                console.error("Error fetching product", error)
-            } finally {
-                setLoading(false)
-            }
-        }
-        fetchProduct()
-    }, [params?.id])
-
-    const handlePurchase = async (variant: ImageVariant) => {
-        if (!session) {
-            toast({
-                title: "Please sign in to purchase",
-            })
-            router.push("/login")
-            return
-        }
-
-        if (!product?._id) {
-            toast({ title: "Invalid product", variant: "destructive" })
-            return
-        }
-
-        try {
-            const { orderId, amount } = await apiClient.createOrder({
-                productId: product._id,
-                variant,
-            })
-
-            const options = {
-                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-                amount,
-                currency: "USD",
-                name: "Imagekit shop",
-                description: `${product.name} - ${variant.type} Version`,
-                order_id: orderId,
-                handler: function () {
-                    toast({ title: "Payment successful" })
-                    router.push("/orders")
-                },
-                prefil: {
-                    email: session.user.email,
-                },
-            }
-
-            const rzp = new (window as any).Razorpay(options)
-            rzp.open()
-        } catch (error) {
-            console.error(error)
-            toast({
-                title:
-                    error instanceof Error ? error.message : "Payment failed",
-                variant: "destructive",
-            })
-        }
-    }
-
-    const getTransformation = (variantType: ImageVariantType) => {
-        const variant = IMAGE_VARIANTS[variantType]
-        return [
-            {
-                width: variant.dimensions.width.toString(),
-                height: variant.dimensions.height.toString(),
-                cropMode: "extract",
-                focus: "center",
-                quality: "60",
-            },
-        ]
-    }
-
-    if (loading)
+    if (isLoading)
         return (
             <div className="min-h-[70vh] flex justify-center items-center">
                 <Loader2 className="w-12 h-12 animate-spin text-primary" />
             </div>
         )
 
-    if (error || !product)
+    if (isError || !product)
         return (
             <div className="alert alert-error max-w-md mx-auto my-8">
                 <AlertCircle className="w-6 h-6" />
-                <span>{error || "Product not found"}</span>
+                <span>
+                    {error instanceof Error
+                        ? error.message
+                        : "Product not found"}
+                </span>
             </div>
         )
 
