@@ -142,7 +142,7 @@ export default function ProductPage() {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <div className="w-full mb-8">
+            <div className="w-full mb-8 p-4">
                 <BackBtn />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

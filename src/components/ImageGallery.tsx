@@ -7,16 +7,23 @@ interface ImageGalleryProps {
 
 export default function ImageGallery({ products }: ImageGalleryProps) {
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full">
-            {products?.map(product => (
-                <ProductCard key={product?._id?.toString()} product={product} />
-            ))}
+        <div className="w-full px-4 sm:px-6 lg:px-8">
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {products?.map(product => (
+                    <ProductCard
+                        key={product?._id?.toString()}
+                        product={product}
+                    />
+                ))}
 
-            {products?.length === 0 && (
-                <div className="col-span-full text-center py-12">
-                    <p className="text-base-content/70">No products found</p>
-                </div>
-            )}
+                {products?.length === 0 && (
+                    <div className="col-span-full text-center py-12">
+                        <p className="text-muted-foreground text-lg">
+                            No products found
+                        </p>
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

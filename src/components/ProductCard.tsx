@@ -13,7 +13,17 @@ export default function ProductCard({ product }: { product: IProduct }) {
     )
 
     return (
-        <Card className="overflow-hidden transition-all duration-300 mx-4 w-96 sm:w-3/9 rounded-xl mb-3">
+        <Card
+            className="
+                group relative 
+                bg-gradient-subtle 
+                rounded-lg overflow-hidden 
+                border border-border/50 
+                transition-all duration-500 
+                hover:shadow-card hover:scale-[1.02] 
+            "
+        >
+            {/* Image container */}
             <Link href={`/products/${product._id}`} className="block">
                 <div className="relative aspect-square overflow-hidden">
                     <IKImage
@@ -29,41 +39,53 @@ export default function ProductCard({ product }: { product: IProduct }) {
                                 quality: "80",
                             },
                         ]}
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-black/0 transition-colors duration-300 hover:bg-black/20" />
+
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
+                        <Button
+                            size="icon"
+                            variant="secondary"
+                            className="bg-background/80 backdrop-blur-sm"
+                        >
+                            <Eye className="h-4 w-4" />
+                        </Button>
+                    </div>
+
+                    {/* Category badge (use first variant count as category-like info) */}
+                    <Badge className="absolute top-3 left-3 bg-primary/90 backdrop-blur-sm rounded-md opacity-80 border border-border/50 border-dashed">
+                        {product.variants.length} sizes
+                    </Badge>
                 </div>
             </Link>
-            <CardContent className="p-4">
+
+            {/* Content */}
+            <CardContent className="p-4 space-y-3">
                 <Link
                     href={`/products/${product._id}`}
                     className="transition-opacity hover:opacity-80"
                 >
-                    <h2 className="line-clamp-1 text-lg font-semibold">
+                    <h2 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1">
                         {product.name}
                     </h2>
                 </Link>
 
-                <p className="mt-2 line-clamp-2 min-h-[2.5rem] text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem]">
                     {product.description}
                 </p>
             </CardContent>
+
+            {/* Price + Actions */}
             <CardFooter className="flex items-center justify-between p-4">
-                <div className="flex flex-col">
-                    <span className="text-lg font-bold ml-2">
+                <div className="flex items-center gap-2">
+                    <span className="text-2xl font-bold text-primary">
                         ${lowestPrice.toFixed(2)}
                     </span>
-                    <Badge variant="secondary" className="mt-1">
-                        <Tag className="mr-1 h-3 w-3" />
-                        {product.variants.length} sizes
-                    </Badge>
                 </div>
 
                 <Button asChild size="sm" className="ml-3 rounded-xl">
-                    <Link href={`/products/${product._id}`}>
-                        <Eye className="mr-2 h-4 w-4" />
-                        View Options
-                    </Link>
+                    <Link href={`/products/${product._id}`}>View Options</Link>
                 </Button>
             </CardFooter>
         </Card>

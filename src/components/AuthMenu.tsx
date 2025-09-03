@@ -37,22 +37,33 @@ export default function AuthMenu() {
             })
         }
     }
+
     return (
-        <div className="flex gap-2 text-center justify-center">
+        <div className="flex items-center gap-3">
             {session && (
-                <div className="username flex items-center justify-center">
-                    <UserCircle className="w-4 h-4" />
-                    <span>{session.user?.email?.split("@")[0]}</span>
+                <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
+                    <UserCircle className="w-5 h-5" />
+                    <span className="truncate max-w-[120px]">
+                        {session.user?.email?.split("@")[0]}
+                    </span>
                 </div>
             )}
+
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="rounded-md border-muted-foreground/20"
+                    >
                         <Menu className="h-5 w-5" />
                         <span className="sr-only">Open menu</span>
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuContent
+                    align="end"
+                    className="w-56 shadow-lg rounded-xl"
+                >
                     {session ? (
                         <>
                             {session.user?.role === "admin" && (
@@ -90,7 +101,7 @@ export default function AuthMenu() {
                                 <Link href="/login">Login</Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                                <Link href="/register">create account</Link>
+                                <Link href="/register">Create account</Link>
                             </DropdownMenuItem>
                         </>
                     )}
