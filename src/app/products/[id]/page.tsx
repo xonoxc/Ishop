@@ -1,13 +1,7 @@
 "use client"
 
 import { IMAGE_VARIANTS } from "@/models/product"
-import {
-    Loader2,
-    AlertCircle,
-    Check,
-    ImageIcon,
-    ShoppingCart,
-} from "lucide-react"
+import { AlertCircle, Check, ImageIcon, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -19,7 +13,6 @@ import useProductPageState from "@/hooks/queries/states/useProductPageState"
 export default function ProductPage() {
     const {
         product,
-        isLoading,
         isError,
         error,
         selectedVariant,
@@ -27,13 +20,6 @@ export default function ProductPage() {
         handlePurchase,
         getTransformation,
     } = useProductPageState()
-
-    if (isLoading)
-        return (
-            <div className="min-h-[70vh] flex justify-center items-center">
-                <Loader2 className="w-12 h-12 animate-spin text-primary" />
-            </div>
-        )
 
     if (isError || !product)
         return (
@@ -49,7 +35,7 @@ export default function ProductPage() {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <div className="w-full mb-8 p-4">
+            <div className="w-full space-y-8 p-4">
                 <BackBtn />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -118,7 +104,7 @@ export default function ProductPage() {
 
                     {/* Variants Selection */}
                     <Tabs defaultValue="versions" className="w-full">
-                        <TabsList className="rounded-2xl mb-4">
+                        <TabsList className="rounded-2xl mb-4 bg-secondary/10 p-1">
                             <TabsTrigger
                                 value="versions"
                                 className="rounded-xl"

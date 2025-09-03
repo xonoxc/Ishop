@@ -34,6 +34,6 @@ export function useProductsQueryOptions(categoryId: string | null) {
                 return (data?.products as IProduct[]) ?? []
             }
         },
-        enabled: !!categoryId,
+        retry: 1,
     }
 }

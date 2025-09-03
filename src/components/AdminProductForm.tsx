@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useForm, useFieldArray, Controller } from "react-hook-form"
 import { ImagePlus, Loader2, Plus, Trash2, Upload } from "lucide-react"
 import { IKUploadResponse } from "imagekitio-next/dist/types/components/IKUpload/props"
@@ -22,7 +22,9 @@ import { Label } from "@/components/ui/label"
 import FileUpload from "./FileUpload"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ICategory } from "@/models/category"
-import { useQueryClient } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import useCategoriesQueryOptions from "@/hooks/queries/categories"
+import { IKImage } from "imagekitio-next"
 
 export default function AdminProductForm() {
     const [loading, setLoading] = useState(false)
@@ -67,6 +69,8 @@ export default function AdminProductForm() {
             description: "Image uploaded successfully!",
         })
     }
+
+    const { data: categories = [] } = useQuery(useCategoriesQueryOptions())
 
     const onSubmit = async (data: ProductFormData) => {
         setLoading(true)
@@ -262,7 +266,7 @@ export default function AdminProductForm() {
                                             <div className="space-y-4">
                                                 <div className="relative w-24 h-24 sm:w-32 sm:h-32 mx-auto rounded-lg overflow-hidden">
                                                     <img
-                                                        src={watchImageUrl}
+                                                        src={`https://ik.imagekit.io/${watchImageUrl}`}
                                                         alt="Product preview"
                                                         className="object-cover w-full h-full"
                                                     />

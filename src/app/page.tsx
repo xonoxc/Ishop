@@ -28,7 +28,7 @@ export default function Home() {
     ] = useQueries({
         queries: [
             useCategoriesQueryOptions(),
-            useProductsQueryOptions(categoryId),
+            useProductsQueryOptions(categoryId ?? null),
         ],
     })
 
